@@ -126,7 +126,7 @@ ProCMT-QSAR/
     └── 07_explainable_ai.ipynb
 ```
 
-> **Dataset & pretrained checkpoints:** the curated dataset and pretrained model checkpoints used in this study can be downloaded from our Zenodo repository (DOI: [10.5281/zenodo.dummy](https://doi.org/10.5281/zenodo.dummy)).
+> **Dataset & pretrained checkpoints:** the curated dataset and pretrained model checkpoints used in this study can be downloaded from our Zenodo repository (DOI:https://doi.org/10.5281/zenodo.21731945).
 
 ---
 
