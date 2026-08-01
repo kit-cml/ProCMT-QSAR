@@ -81,6 +81,21 @@ This lets each endpoint contribute to training proportionally to its estimated n
 
 ---
 
+## Molecular Modalities Used
+
+ProCMT-QSAR jointly learns from six complementary molecular representations, each capturing a distinct aspect of chemical structure:
+
+| Modality | Representation | Implementation | Dimension |
+|----------|-----------------|-----------------|-----------|
+| **M1** | Fingerprint | Concatenation of 167-bit MACCS keys and 2,048-bit ECFP4/Morgan fingerprint. Captures substructure patterns and circular atom environments. | 2,215-dim |
+| **M2** | Physicochemical descriptors | RDKit- and CDK-based descriptors capturing molecular size, polarity, lipophilicity, hydrogen bonding, and related properties. | 51 features |
+| **M3** | Extended 2D descriptors | Preprocessed Mordred descriptors selected from the original descriptor set, capturing broad 2D structural and physicochemical information. | ~1,613 features |
+| **M4** | Molecular graph | Atom-bond graph encoded by a Graph Attention Network (GAT), capturing molecular topology, atom-level properties, and local chemical environments. | Variable (graph) |
+| **M5** | SMILES sequence embedding | Canonical SMILES encoded using ChemBERTa, capturing sequence-like molecular syntax and learned chemical language patterns. | Model-dependent |
+| **M6** | 3D conformer | ETKDG-generated 3D conformer with MMFF94 minimization, encoded using a SchNet-based interaction network, capturing spatial and geometric molecular information. | 3D coordinates |
+
+---
+
 ## Repository structure
 
 ```
@@ -190,6 +205,8 @@ Set `demo.enabled: true` in `config.yaml` to run the entire pipeline on a small 
 ---
 
 ## Citation
+
+> This section will be updated with the full citation details (journal, volume, pages, DOI) once the manuscript is published.
 
 ```bibtex
 @article{nursyafi2026procmtqsar,
