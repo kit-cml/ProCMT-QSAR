@@ -1,0 +1,81 @@
+# =============================================================================
+# config.yaml — Central Configuration for QSAR Endocrine Toxicity Pipeline
+# =============================================================================
+#
+# HOW TO USE:
+#   All notebooks load this file at the top. You only need to change the
+#   paths in the [paths] section to match your local machine. Everything
+#   else (thresholds, targets, seeds) is already set to match the paper.
+#
+# QUICK START:
+#   1. Set `raw_data_root` to the folder containing your downloaded ChEMBL CSVs
+#   2. Set `processed_root` to where you want the pipeline to write outputs
+#   3. Run notebooks in order: 01 → 02 → 03 → 04 → 05 → 06 → 07
+# =============================================================================
+
+# ── Paths ────────────────────────────────────────────────────────────────────
+# Change these to match your local machine.
+# Use forward slashes (/) on all platforms including Windows.
+paths:
+  raw_data_root:   "D:/QSAR 2026/Toxicity/Dataset_final"   # folder with raw ChEMBL CSVs
+  processed_root:  "D:/QSAR 2026/Toxicity/Dataset_final"   # output root for processed data
+  split_root:      "D:/QSAR 2026/Toxicity/Dataset_final/Stratified_Scaffold_Split"
+  mol_rep_root:    "D:/QSAR 2026/Toxicity/Dataset_final/mol representation"
+  training_root:   "D:/QSAR 2026/Toxicity/Training"
+  results_root:    "D:/QSAR 2026/Toxicity/Results"
+
+# ── Target Proteins ──────────────────────────────────────────────────────────
+targets:
+  - name:      "AR_IC50"
+    chembl_id: "CHEMBL1871"
+    label:     "Androgen receptor"
+  - name:      "CYP19A1_IC50"
+    chembl_id: "CHEMBL1978"
+    label:     "Aromatase (CYP19A1)"
+  - name:      "ESR1_alpha_IC50"
+    chembl_id: "CHEMBL206"
+    label:     "Estrogen receptor alpha (ESR1)"
+  - name:      "ESR2_beta_IC50"
+    chembl_id: "CHEMBL242"
+    label:     "Estrogen receptor beta (ESR2)"
+  - name:      "HSD11B1_IC50"
+    chembl_id: "CHEMBL4235"
+    label:     "11-beta-HSD1 (HSD11B1)"
+  - name:      "PPARG_IC50"
+    chembl_id: "CHEMBL235"
+    label:     "PPAR-gamma (PPARG)"
+
+# ── Labeling Thresholds ───────────────────────────────────────────────────────
+# These define the clean-margin binary labeling scheme (IC50 in nM).
+# Do NOT change these — they are locked to the paper's methodology.
+labeling:
+  active_threshold_nM:    1000    # IC50 <= this → label 1 (active)
+  inactive_threshold_nM:  10000   # IC50 >= this → label 0 (non-active)
+  # Compounds between 1000–10000 nM are removed (intermediate zone)
+
+# ── Class Balancing ──────────────────────────────────────────────────────────
+balancing:
+  max_ratio:    3        # maximum majority:minority ratio (random undersampling)
+  strategy:     "undersample_majority"
+
+# ── Dataset Split ────────────────────────────────────────────────────────────
+split:
+  test_size:    0.20     # held-out test set fraction
+  n_cv_folds:   10       # number of CV folds within train pool
+  method:       "stratified_scaffold"
+
+# ── Reproducibility ──────────────────────────────────────────────────────────
+seed: 42
+
+# ── Assay Quality Filters ────────────────────────────────────────────────────
+filters:
+  min_confidence_score:   7      # ChEMBL assay confidence score threshold
+  allowed_relations:      ["="]  # Standard Relation values to keep
+  allowed_standard_types: ["IC50"]
+
+# ── Demo Mode ────────────────────────────────────────────────────────────────
+# When demo_mode: true, notebooks use the small demo dataset in data/demo/
+# and run much faster (no GPU required, ~5 min total).
+demo:
+  enabled:    false
+  n_mols:     200        # molecules to sample per target in demo mode

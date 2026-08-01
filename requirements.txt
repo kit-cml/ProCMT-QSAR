@@ -1,0 +1,56 @@
+# =============================================================================
+# requirements.txt — QSAR Endocrine Toxicity Pipeline
+# =============================================================================
+# Install with: pip install -r requirements.txt
+#
+# Python >= 3.10 recommended
+# CUDA 11.8+ recommended for notebooks 05–07 (training, evaluation, XAI)
+# Notebooks 01–04 run fully on CPU.
+# =============================================================================
+
+# ── Core scientific stack ─────────────────────────────────────────────────────
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.11.0
+scikit-learn>=1.3.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# ── Configuration ─────────────────────────────────────────────────────────────
+pyyaml>=6.0
+
+# ── Chemistry ─────────────────────────────────────────────────────────────────
+rdkit>=2023.3.1          # core: SMILES parsing, scaffold, fingerprints, 3D conformers
+mordredcommunity>=1.2.0  # Mordred 2D/3D descriptors (community fork, Python 3.10+)
+# Alternative if mordredcommunity fails: pip install mordred
+
+# ── Dimensionality reduction (Notebook 02) ────────────────────────────────────
+umap-learn>=0.5.3
+
+# ── Deep learning (Notebooks 03–07) ──────────────────────────────────────────
+torch>=2.1.0             # PyTorch — install GPU version from pytorch.org if needed
+torch-geometric>=2.4.0   # for GAT/GNN (molecular graph encoder)
+torch-scatter            # required by torch-geometric
+torch-sparse             # required by torch-geometric
+
+# ── Protein language model (Notebook 04) ─────────────────────────────────────
+fair-esm>=2.0.0          # ESM-2 protein embeddings (Meta Research)
+
+# ── Transformer for SMILES (Notebook 03, 05) ─────────────────────────────────
+transformers>=4.35.0     # HuggingFace — ChemBERTa
+tokenizers>=0.15.0
+
+# ── Hyperparameter optimization (Notebook 05) ────────────────────────────────
+optuna>=3.4.0
+
+# ── Explainability (Notebook 07) ─────────────────────────────────────────────
+shap>=0.43.0
+captum>=0.6.0            # Integrated Gradients (atom-level attribution)
+
+# ── File I/O ──────────────────────────────────────────────────────────────────
+openpyxl>=3.1.0          # for .xlsx read/write
+
+# ── Jupyter ───────────────────────────────────────────────────────────────────
+jupyter>=1.0.0
+ipykernel>=6.25.0
+tqdm>=4.66.0

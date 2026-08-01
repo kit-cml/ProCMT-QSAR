@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data (upload ke Zenodo, bukan GitHub)
+data/raw/*.csv
+data/processed/
+data/demo/
+
+# Model weights
+checkpoints/*.pt
+checkpoints/*.pkl
+checkpoints/*.json
+
+# Optuna
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
