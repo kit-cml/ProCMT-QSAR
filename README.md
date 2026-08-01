@@ -1,8 +1,18 @@
-# Protein-Conditioned Multimodal Multi-Task QSAR — Endocrine Toxicity
+# ProCMT-QSAR — Protein-Conditioned Multimodal Multi-Task QSAR for Endocrine Toxicity
 
 Reproducibility repository for:
 
-> **Protein-Aware Multimodal Multi-Task QSAR Classification of IC50-Based Endocrine Toxicity Mechanism Endpoints across AR, CYP19A1, ESR1, ESR2, HSD11B1, and PPARG under Stratified Scaffold Evaluation**
+> **ProCMT-QSAR: An Interpretable Target-Aware Protein-Conditioned Multimodal Multi-Task QSAR Model for Toxicity Prediction of Endocrine-Disrupting Chemicals**
+>
+> Fauzan Syarif Nursyafi<sup>1</sup>, Yunendah Nur Fuadah<sup>2</sup>, Ulfa Latifa Hanum<sup>3</sup>, Ki Moo Lim<sup>1,4,5,*</sup>
+>
+> <sup>1</sup>Department of Biomedical Engineering, Kumoh National Institute of Technology, Gumi, 39177, Republic of Korea
+> <sup>2</sup>Telecommunication Engineering Study Program, School of Electrical Engineering, Telkom University, Jl. Telekomunikasi No. 1, Bandung 40257, West Java, Indonesia
+> <sup>3</sup>Department of IT Convergence Engineering, Kumoh National Institute of Technology, Gumi, 39177, Republic of Korea
+> <sup>4</sup>Meta Heart Co., Ltd, Gumi, 39253, Republic of Korea
+> <sup>5</sup>High-tech Medical Equipment Research Institute, Kumoh National Institute of Technology, Gumi, 39177, Republic of Korea
+>
+> \*Corresponding author: Ki Moo Lim, [kmlim@kumoh.ac.kr](mailto:kmlim@kumoh.ac.kr)
 
 ---
 
@@ -16,21 +26,30 @@ The model predicts whether a compound is **active** (IC50 ≤ 1,000 nM) or **non
 |--------|----------------|
 | AR (Androgen receptor) | Androgen signaling |
 | CYP19A1 (Aromatase) | Estrogen biosynthesis |
-| ESR1-alpha (Estrogen receptor α) | Estrogen receptor signaling |
-| ESR2-beta (Estrogen receptor β) | Estrogen receptor signaling |
+| ESR1-α (Estrogen receptor α) | Estrogen receptor signaling |
+| ESR2-β (Estrogen receptor β) | Estrogen receptor signaling |
 | HSD11B1 (11β-HSD1) | Glucocorticoid metabolism |
-| PPARG (PPARγ) | Metabolic nuclear receptor regulation |
+| PPARγ (PPARG) | Metabolic nuclear receptor regulation |
+
+---
+
+## ProCMT-QSAR Framework
+
+![ProCMT-QSAR Framework](ProCMTQSAR_framework.png)
+
+The framework integrates six complementary molecular representations (fingerprints, physicochemical descriptors, Mordred 2D descriptors, molecular graph, SMILES sequence embedding, and 3D conformer descriptors) with protein-conditioned cross-attention and a modality-gated Mixture-of-Experts fusion module, trained jointly across six endocrine-related endpoints under a multi-task learning scheme.
 
 ---
 
 ## Repository structure
 
 ```
-qsar-endocrine-toxicity/
+ProCMT-QSAR/
 ├── README.md
 ├── LICENSE
 ├── requirements.txt
 ├── config.yaml                        ← central configuration (paths, thresholds, seeds)
+├── ProCMTQSAR_framework.png
 │
 ├── data/
 │   ├── raw/README.md                  ← ChEMBL download instructions
@@ -38,25 +57,21 @@ qsar-endocrine-toxicity/
 │   └── demo/                          ← small demo subset for quick-run
 │
 ├── utils/
+│   ├── __init__.py
 │   ├── chem_utils.py                  ← shared chemistry functions
-│   ├── split_utils.py                 ← scaffold split and leakage check
-│   └── eval_utils.py                  ← metrics and bootstrap CI
+│   └── split_utils.py                 ← scaffold split and leakage check
 │
-├── notebooks/
-│   ├── 01_dataset_preprocessing.ipynb
-│   ├── 02_chemical_space_and_ad.ipynb
-│   ├── 03_molecular_representation.ipynb
-│   ├── 04_protein_embedding.ipynb
-│   ├── 05_model_training.ipynb
-│   ├── 06_performance_evaluation.ipynb
-│   └── 07_explainable_ai.ipynb
-│
-├── scripts/                           ← full-scale GPU scripts (see below)
-│   ├── run_full_training.py
-│   └── run_full_evaluation.py
-│
-└── checkpoints/README.md             ← link to pretrained model weights
+└── notebooks/
+    ├── 01_dataset_preprocessing.ipynb
+    ├── 02_chemical_space_and_ad.ipynb
+    ├── 03_molecular_representation.ipynb
+    ├── 04_protein_embedding.ipynb
+    ├── 05_model_training.ipynb
+    ├── 06_performance_evaluation.ipynb
+    └── 07_explainable_ai.ipynb
 ```
+
+> **Dataset & pretrained checkpoints:** the curated dataset and pretrained model checkpoints used in this study can be downloaded from our Zenodo repository (DOI: [10.5281/zenodo.dummy](https://doi.org/10.5281/zenodo.dummy)).
 
 ---
 
@@ -65,8 +80,8 @@ qsar-endocrine-toxicity/
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/qsar-endocrine-toxicity.git
-cd qsar-endocrine-toxicity
+git clone https://github.com/kit-cml/ProCMT-QSAR.git
+cd ProCMT-QSAR
 ```
 
 ### 2. Install dependencies
@@ -89,7 +104,7 @@ paths:
 
 ### 4. Download raw data
 
-Follow the instructions in `data/raw/README.md` to download the 6 ChEMBL IC50 CSV files.
+Follow the instructions in `data/raw/README.md` to download the six ChEMBL IC50 CSV files.
 
 ### 5. Run the pipeline
 
@@ -115,8 +130,8 @@ Set `demo.enabled: true` in `config.yaml` to run the entire pipeline on a small 
 |----------|-------------|------|-------------|
 | 01 Dataset preprocessing | Curation, labeling, scaffold split | No | ~5–10 min |
 | 02 Chemical space & AD | UMAP, Tanimoto, scaffold diversity | No | ~5 min |
-| 03 Molecular representation | 6 modalities: FP, descriptors, graph, SMILES, 3D | Optional | ~30–60 min |
-| 04 Protein embedding | ESM-2 embeddings for 6 targets | Optional | ~5 min |
+| 03 Molecular representation | Six modalities: FP, descriptors, graph, SMILES, 3D | Optional | ~30–60 min |
+| 04 Protein embedding | ESM-2 embeddings for six targets | Optional | ~5 min |
 | 05 Model training | Multimodal multi-task QSAR, 10-fold CV | Yes | ~12–24 hr |
 | 06 Performance evaluation | Bootstrap CI, baselines, ROC/PR curves | Optional | ~30 min |
 | 07 Explainable AI | SHAP, fragment, atom attribution, gate weights | Optional | ~1–2 hr |
@@ -126,7 +141,7 @@ Set `demo.enabled: true` in `config.yaml` to run the entire pipeline on a small 
 ## Key methodological decisions
 
 - **Labeling:** Clean-margin binary labels — active ≤ 1,000 nM, non-active ≥ 10,000 nM, intermediate removed
-- **Split:** Stratified scaffold split (Bemis-Murcko) — 80% train pool, 20% held-out test
+- **Split:** Stratified scaffold split (Bemis–Murcko) — 80% train pool, 20% held-out test
 - **Evaluation:** 10-fold stratified scaffold CV within train pool; held-out test used exactly once
 - **Balancing:** Random undersampling of majority class, max 3:1 ratio (train pool only)
 - **Architecture:** Protein-conditioned cross-attention + modality-gated Mixture-of-Experts fusion
@@ -137,11 +152,12 @@ Set `demo.enabled: true` in `config.yaml` to run the entire pipeline on a small 
 ## Citation
 
 ```bibtex
-@article{yourname2026qsar,
-  title   = {Protein-Aware Multimodal Multi-Task QSAR Classification of IC50-Based
-             Endocrine Toxicity Mechanism Endpoints across AR, CYP19A1, ESR1,
-             ESR2, HSD11B1, and PPARG under Stratified Scaffold Evaluation},
-  author  = {Author, A. and Author, B.},
+@article{nursyafi2026procmtqsar,
+  title   = {ProCMT-QSAR: An Interpretable Target-Aware Protein-Conditioned
+             Multimodal Multi-Task QSAR Model for Toxicity Prediction of
+             Endocrine-Disrupting Chemicals},
+  author  = {Nursyafi, Fauzan Syarif and Fuadah, Yunendah Nur and
+             Hanum, Ulfa Latifa and Lim, Ki Moo},
   journal = {Journal Name},
   year    = {2026},
 }
