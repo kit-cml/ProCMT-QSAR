@@ -20,7 +20,7 @@ Reproducibility repository for:
 
 This repo provides a step-by-step tutorial pipeline that reproduces the complete methodology from raw ChEMBL data to model predictions and explainability analysis.
 
-The model predicts whether a compound is **active** (IC50 ≤ 1,000 nM) or **non-active** (IC50 ≥ 10,000 nM) against six endocrine-relevant protein targets simultaneously, using a protein-conditioned multimodal multi-task architecture.
+The model predicts whether a compound is **active** or **non-active** against six endocrine-relevant protein targets simultaneously, using a protein-conditioned multimodal multi-task architecture.
 
 | Endpoint | Protein function | Endocrine disruption relevance |
 |----------|-------------------|-------------------------------|
