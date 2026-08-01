@@ -22,14 +22,16 @@ This repo provides a step-by-step tutorial pipeline that reproduces the complete
 
 The model predicts whether a compound is **active** (IC50 ≤ 1,000 nM) or **non-active** (IC50 ≥ 10,000 nM) against six endocrine-relevant protein targets simultaneously, using a protein-conditioned multimodal multi-task architecture.
 
-| Target | Biological role |
-|--------|----------------|
-| AR (Androgen receptor) | Androgen signaling |
-| CYP19A1 (Aromatase) | Estrogen biosynthesis |
-| ESR1-α (Estrogen receptor α) | Estrogen receptor signaling |
-| ESR2-β (Estrogen receptor β) | Estrogen receptor signaling |
-| HSD11B1 (11β-HSD1) | Glucocorticoid metabolism |
-| PPARγ (PPARG) | Metabolic nuclear receptor regulation |
+| Endpoint | Protein function | Endocrine disruption relevance |
+|----------|-------------------|-------------------------------|
+| **AR** (Androgen receptor) | Ligand-activated transcription factor mediating androgen signaling | Disruption of androgen signaling; associated with male reproductive toxicity, spermatogenesis impairment, and prostate dysfunction |
+| **CYP19A1** (Aromatase) | Cytochrome P450 enzyme converting androgens to estrogens | Reduction of circulating estrogen levels; disruption of female reproduction, bone metabolism, and HPG axis feedback |
+| **ESR1α** (Estrogen receptor α) | Nuclear receptor mediating estrogen signaling in uterus, breast, bone, and hypothalamus | Disruption of estrogen-regulated reproductive, skeletal, and neuroendocrine function |
+| **ESR2β** (Estrogen receptor β) | Nuclear receptor with partially distinct tissue distribution from ESR1, expressed in ovary, prostate, and brain | Disruption of ovarian folliculogenesis, prostate differentiation, and neuroprotective estrogen signaling |
+| **HSD11B1** (11β-HSD1) | Intracellular oxidoreductase regenerating active cortisol from cortisone in metabolic tissues | Perturbation of local glucocorticoid homeostasis; dysregulation of adipogenesis, insulin sensitivity, and HPA axis tone |
+| **PPARγ** (PPARG) | Ligand-activated nuclear receptor governing adipogenesis, lipid storage, and insulin sensitization | Disruption of adipocyte differentiation and lipid metabolism; relevant to the obesogen pathway of endocrine disruption |
+
+Compounds are classified as **active** or **non-active** per endpoint based on mechanism-relevant IC50 thresholds (active ≤ 1,000 nM; non-active ≥ 10,000 nM), reflecting potent versus negligible target engagement.
 
 ---
 
@@ -38,6 +40,44 @@ The model predicts whether a compound is **active** (IC50 ≤ 1,000 nM) or **non
 ![ProCMT-QSAR Framework](ProCMTQSAR_framework.png)
 
 The framework integrates six complementary molecular representations (fingerprints, physicochemical descriptors, Mordred 2D descriptors, molecular graph, SMILES sequence embedding, and 3D conformer descriptors) with protein-conditioned cross-attention and a modality-gated Mixture-of-Experts fusion module, trained jointly across six endocrine-related endpoints under a multi-task learning scheme.
+
+---
+
+## Methodology Summary
+
+ProCMT-QSAR proceeds through four stages: **(1)** independent encoding of six molecular modalities into a shared latent space, **(2)** conditioning of the fused molecular representation on a target-specific ESM-2 protein embedding via cross-attention, **(3)** adaptive fusion of modality contributions through a gated Mixture-of-Experts (MoE), and **(4)** multi-task prediction with uncertainty-based loss weighting.
+
+**1. Modality encoding and projection.** Each modality $m$ (fingerprint, physicochemical, Mordred, graph, SMILES, 3D) is encoded by a dedicated network and linearly projected into a shared latent dimension $d$:
+
+$$\mathbf{h}_i^m = W_m\, \mathbf{z}_i^m + b_m \in \mathbb{R}^d$$
+
+The six projected embeddings are stacked into a modality tensor $\mathbf{H}_i \in \mathbb{R}^{M \times d}$, $M = 6$.
+
+**2. Protein-conditioned cross-attention.** A pretrained ESM-2 protein embedding $\mathbf{h}_t^p$ (mean-pooled over residues) serves as the query, while the modality tensor supplies keys and values:
+
+$$Q_t = \mathbf{h}_t^p W_Q,\quad K_i = \mathbf{H}_i W_K,\quad V_i = \mathbf{H}_i W_V$$
+$$\mathbf{c}_{i,t} = A_{i,t} V_i,\qquad \mathbf{c}_{i,t}^{\text{res}} = \text{LayerNorm}\left(\mathbf{c}_{i,t} + \mathbf{h}_t^p\right)$$
+
+This yields a protein-conditioned molecular context specific to each target.
+
+**3. Modality-gated MoE fusion.** A gating network produces a softmax weight over the six modality "experts," each transformed independently, and combines them into a fused representation:
+
+$$\mathbf{g}_{i,t} = \text{softmax}\left(W_g\left[\mathbf{h}_t^p;\ \mathbf{c}_{i,t}^{\text{res}};\ \text{MeanPool}(\mathbf{H}_i)\right] + b_g\right), \quad \sum_{m=1}^{M} g_{i,t}^m = 1$$
+$$\mathbf{h}_{i,t}^{\text{fused}} = \sum_{m=1}^{M} g_{i,t}^m\, u_i^m,\qquad u_i^m = \text{Expert}_m(\mathbf{h}_i^m)$$
+
+**4. Multi-task loss with uncertainty weighting.** Six endpoint-specific prediction heads share the backbone. A masked binary cross-entropy handles missing endpoint labels, and task losses are combined via learnable homoscedastic uncertainty weights $s_t = \log\sigma_t^2$:
+
+$$\mathcal{L}_t = -\frac{1}{N}\sum_{i=1}^{N} m_{i,t}\left[y_{i,t}\log\hat{p}_{i,t} + (1-y_{i,t})\log(1-\hat{p}_{i,t})\right]$$
+$$\mathcal{L}_{\text{total}} = \sum_{t=1}^{T}\left(\tfrac{1}{2}e^{-s_t}\mathcal{L}_t + \tfrac{1}{2}s_t\right), \quad T=6$$
+
+This lets each endpoint contribute to training proportionally to its estimated noise/difficulty rather than a fixed manual weight.
+
+**Other key methodological choices:**
+- **Labeling:** active ≤ 1,000 nM, non-active ≥ 10,000 nM IC50 (intermediate excluded)
+- **Data split:** stratified Bemis–Murcko scaffold split (80% train pool / 20% held-out test), verified scaffold- and SMILES-leakage-free
+- **Model selection:** Optuna (TPE sampler) hyperparameter search under 10-fold stratified scaffold cross-validation within the train pool only
+- **Applicability domain:** consensus of structural (Tanimoto/ECFP4) and latent (fused-representation distance) domain membership
+- **Interpretability:** SHAP-based global/local feature attribution, fragment enrichment analysis, and MoE gate-weight inspection
 
 ---
 
