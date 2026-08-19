@@ -1,19 +1,20 @@
-# ProCMT-QSAR — Protein-Conditioned Multimodal Multi-Task QSAR for Endocrine Toxicity
+# ProCMT-QSAR — Protein-Conditioned Multimodal Multi-Task QSAR for Toxicity Assessment of Endocrine-Disrupting Chemicals
 
 Reproducibility repository for:
 
-> **ProCMT-QSAR: An Interpretable Target-Aware Protein-Conditioned Multimodal Multi-Task QSAR Model for Toxicity Prediction of Endocrine-Disrupting Chemicals**
+> **ProCMT-QSAR: An Interpretable Target-Aware Protein-Conditioned Multimodal Multi-Task QSAR Model for Toxicity Assessment of Endocrine-Disrupting Chemicals**
 >
-> Fauzan Syarif Nursyafi<sup>1</sup>, Yunendah Nur Fuadah<sup>2</sup>, Ulfa Latifa Hanum<sup>3</sup>, Ki Moo Lim<sup>1,4,5,*</sup>
+> Fauzan Syarif Nursyafi<sup>1,2</sup>, Yunendah Nur Fuadah<sup>3</sup>, Ulfa Latifa Hanum<sup>4</sup>, Ki Moo Lim<sup>1,5,6,*</sup>
 >
-> <sup>1</sup>Department of Biomedical Engineering, Kumoh National Institute of Technology, Gumi, 39177, Republic of Korea
-> <sup>2</sup>Telecommunication Engineering Study Program, School of Electrical Engineering, Telkom University, Jl. Telekomunikasi No. 1, Bandung 40257, West Java, Indonesia
-> <sup>3</sup>Department of IT Convergence Engineering, Kumoh National Institute of Technology, Gumi, 39177, Republic of Korea
-> <sup>4</sup>Meta Heart Co., Ltd, Gumi, 39253, Republic of Korea
-> <sup>5</sup>High-tech Medical Equipment Research Institute, Kumoh National Institute of Technology, Gumi, 39177, Republic of Korea
+> <sup>1</sup>Department of Biomedical Engineering, Kumoh National Institute of Technology, Gumi, 39177, Republic of Korea  
+> <sup>2</sup>Bioinformatics Research Center, Institute of Bioinformatics Indonesia, Malang, 65162, Indonesia  
+> <sup>3</sup>Telecommunication Engineering Study Program, School of Electrical Engineering, Telkom University, Jl. Telekomunikasi No. 1, Bandung 40257, West Java, Indonesia  
+> <sup>4</sup>Department of IT Convergence, Kumoh National Institute of Technology, Gumi, 39177, Republic of Korea  
+> <sup>5</sup>Meta Heart Co., Ltd, Gumi, 39253, Republic of Korea  
+> <sup>6</sup>High-tech Medical Equipment Research Institute, Kumoh National Institute of Technology, Gumi, 39177, Republic of Korea  
 >
 > \*Corresponding author: Ki Moo Lim, [kmlim@kumoh.ac.kr](mailto:kmlim@kumoh.ac.kr)
-
+> 
 ---
 
 ## Overview
